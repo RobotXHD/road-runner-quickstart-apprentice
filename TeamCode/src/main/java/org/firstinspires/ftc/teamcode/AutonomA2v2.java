@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -39,6 +40,9 @@ public class AutonomA2v2 extends LinearOpMode {
     int currentmotorBR;
     int currentmotorFL;
     int currentmotorFR;
+    private DcMotor arm, arm2;
+    private DcMotor slider;
+    private Servo claw;
 
     private double lowerRuntime = 0;
     private double upperRuntime = 0;
@@ -50,15 +54,28 @@ public class AutonomA2v2 extends LinearOpMode {
         motorFL = hardwareMap.get(DcMotorEx.class, "motorFL");
         motorFR = hardwareMap.get(DcMotorEx.class, "motorFR");
 
+        arm = hardwareMap.get(DcMotor.class, "arm");
+        arm2 = hardwareMap.get(DcMotor.class, "arm2");
+        slider = hardwareMap.get(DcMotor.class, "slider");
+        claw = hardwareMap.servo.get("claw");
+        
         motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        arm2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        slider.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -322,6 +339,14 @@ public class AutonomA2v2 extends LinearOpMode {
         while(lastTime + t < System.currentTimeMillis()){
 
         }
+    }
+    public void sistem(int pos){
+        arm.setTargetPosition(pos);//465
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setPower(1);
+        while(arm.isBusy());
+        arm.setPower(0);
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }
 /*              |

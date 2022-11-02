@@ -36,7 +36,7 @@ public class PPNotWorking extends OpMode{
     private DcMotor motorBR;
     private DcMotor motorFL;
     private DcMotor motorFR;
-    private DcMotor arm;
+    private DcMotor arm, arm2;
     private DcMotor slider;
     private Servo claw;
     double sm = 1, ms = 1;
@@ -72,6 +72,7 @@ public class PPNotWorking extends OpMode{
         motorFL = hardwareMap.get(DcMotor.class, "motorFL"); // Motor Front-Left
         motorFR = hardwareMap.get(DcMotor.class, "motorFR"); // Motor Front-Right
         arm = hardwareMap.get(DcMotor.class, "arm");
+        arm2 = hardwareMap.get(DcMotor.class, "arm2");
         slider = hardwareMap.get(DcMotor.class, "slider");
         claw = hardwareMap.servo.get("claw");
 
@@ -84,6 +85,7 @@ public class PPNotWorking extends OpMode{
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -92,6 +94,7 @@ public class PPNotWorking extends OpMode{
         motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slider.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -100,6 +103,7 @@ public class PPNotWorking extends OpMode{
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        arm2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slider.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         telemetry.addData("Status", "Initialized");
@@ -175,7 +179,8 @@ public class PPNotWorking extends OpMode{
             while (!stop) {
 
                 armPower  = gamepad2.left_stick_y;
-                arm.setPower(armPower/ms * 2);
+                arm.setPower(armPower/ms/2);
+                arm2.setPower(-armPower/ms/2);
 
                 sliderPower  = gamepad2.right_stick_y;
                 slider.setPower(sliderPower / ms);

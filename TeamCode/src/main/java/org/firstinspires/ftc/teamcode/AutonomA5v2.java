@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -39,6 +40,9 @@ public class AutonomA5v2 extends LinearOpMode {
     int currentmotorBR;
     int currentmotorFL;
     int currentmotorFR;
+    private DcMotor arm, arm2;
+    private DcMotor slider;
+    private Servo claw;
 
     private double lowerRuntime = 0;
     private double upperRuntime = 0;
@@ -50,20 +54,37 @@ public class AutonomA5v2 extends LinearOpMode {
         motorFL = hardwareMap.get(DcMotorEx.class, "motorFL");
         motorFR = hardwareMap.get(DcMotorEx.class, "motorFR");
 
+        arm = hardwareMap.get(DcMotor.class, "arm");
+        arm2 = hardwareMap.get(DcMotor.class, "arm2");
+        slider = hardwareMap.get(DcMotor.class, "slider");
+        claw = hardwareMap.servo.get("claw");
+
         motorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         motorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        arm2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        slider.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slider.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry(),telemetry);
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -176,36 +197,6 @@ public class AutonomA5v2 extends LinearOpMode {
         if(value < min){ value = min; }
         if(value > max){ value = max; }
         return value;
-    }
-    public void RotireKindaSmooth(int poz, double power, int choice){
-        if(choice%4==0) {
-            motorFR.setTargetPosition(poz);
-
-            motorFR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            motorFR.setPower(power);
-        }
-        else if(choice%4==1) {
-            motorFL.setTargetPosition(poz);
-
-            motorFL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            motorFL.setPower(power);
-        }
-        else if(choice%4==2) {
-            motorBR.setTargetPosition(poz);
-
-            motorBR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            motorBR.setPower(power);
-        }
-        else if(choice%4==3) {
-            motorBL.setTargetPosition(poz);
-
-            motorBL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            motorBL.setPower(power);
-        }
     }
     public void Translatare(int deltaX, int deltaY, double speed)
     {
@@ -343,6 +334,14 @@ public class AutonomA5v2 extends LinearOpMode {
         else{
             Translatare(-tiles * 125,0, speed);
         }
+    }
+    public void sistem(int pos){
+        arm.setTargetPosition(pos);//465
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setPower(1);
+        while(arm.isBusy());
+        arm.setPower(0);
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }
 /*              |
